@@ -93,11 +93,46 @@ python -m pytest tests/ -q                  # 22 tests
 
 No dependencies beyond the Python standard library (`pytest` for the tests).
 
+## Sources beyond the Register — observed, not yet trusted
+
+Providers are audited against guidance and priced against the NDIA schedule,
+and both change outside the Federal Register. Those sources are now being
+*observed* in `data/observations.jsonl`, but **nothing from them is published
+as a detection** and none of it counts toward any figure on the log page.
+
+They sit in quarantine because both available signals can lie, in opposite
+directions:
+
+- The Commission's `sitemap.xml` carries a per-URL `lastmod`, but it lies by
+  **omission** — all four Core Module pages sit at an identical 2024-10-10
+  across the July 2026 standards activity.
+- NDIA pages return an HTTP `Last-Modified`, but it appears to lie by
+  **commission** — within one hour of first observation the pricing page's
+  value moved *backwards*, from 5 August to 31 July. Editorial change cannot
+  move backwards, so at least some of that is cache behaviour.
+
+`python scripts/observe_sources.py --report` shows how often each signal has
+moved. Nothing gets promoted into the log until a signal is demonstrably quiet
+and corroborated by a real content difference. A noisy row would cost more than
+the coverage is worth.
+
+**Access, stated openly.** Both hosts sit behind a WAF that drops non-browser
+user-agents — a self-identifying agent, the standard `compatible;` bot format,
+and Googlebot's own agent all hang and return nothing. Neither site publishes a
+`robots.txt`. This poller therefore sends a conventional browser user-agent so
+it is served at all, and identifies its operator honestly with the standard
+`From:` header rather than hiding. Volume is a handful of requests, four times
+a day. If you publish either site and would rather we didn't, the contact
+address is in every request we make.
+
+The Commission's host additionally refuses datacenter IPs, so its sitemap is
+unreachable from CI. Those rounds are recorded as outages in the data, visible
+in the `lost` column of the report — never as "unchanged".
+
 ## Limitations, stated plainly
 
-- It tracks **legislative instruments only**. NDIS Commission guidance, practice
-  standards booklets and the NDIA Pricing Schedule change outside the Federal
-  Register and are not covered here yet.
+- Detections cover **legislative instruments only**. Guidance and pricing are
+  observed but quarantined, as above.
 - Detection is bounded by the poll interval: worst case is about six hours plus
   the Register's own publication lag.
 - The record began in August 2026. It cannot tell you anything about amendments
