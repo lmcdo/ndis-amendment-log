@@ -57,6 +57,21 @@ jobs:
       - name: Verify chain after appending
         run: python scripts/poll_amendments.py --verify
 
+      - name: Observe non-Register sources (quarantined)
+        id: observe
+        # Exit codes: 0 none, 1 error/lost signal, 2 changes observed.
+        # These signals are NOT published as detections — they accrue in
+        # data/observations.jsonl until their false-positive rate is known.
+        # A lost signal still fails the job: silently watching nothing is the
+        # failure mode this tier exists to avoid.
+        run: |
+          set +e
+          python scripts/observe_sources.py
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -eq 1 ]; then exit 1; fi
+          exit 0
+
       - name: Commit
         run: |
           git config user.name  "amendment-log[bot]"
