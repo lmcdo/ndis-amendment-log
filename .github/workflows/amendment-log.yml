@@ -1,0 +1,82 @@
+# Daily poll of the Federal Register for NDIS instrument amendments.
+#
+# This runs in CI rather than on a developer machine on purpose. The log's
+# credibility rests on timestamps the author does not control: the commit time
+# and the run record are GitHub's. A log self-published from a laptop proves
+# considerably less.
+name: amendment-log
+
+on:
+  schedule:
+    # Every six hours. Worst-case detection latency is therefore ~6h plus the
+    # Register's own publication lag, rather than ~24h on a daily poll.
+    # Deliberately set high now, while the published record is short and cheap
+    # to improve: the latency figures on the page are permanent once written.
+    # Off the hour because GitHub delays jobs queued exactly on :00.
+    - cron: "10 1,7,13,19 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: amendment-log
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify chain before touching it
+        # Refuse to append to a log that has already been tampered with.
+        run: python scripts/poll_amendments.py --verify
+
+      - name: Run unit tests
+        run: |
+          python -m pip install --quiet pytest
+          python -m pytest tests/ -q
+
+      - name: Poll the Register
+        id: poll
+        # Exit codes: 0 none, 1 error, 2 changes found. Only 1 is a failure.
+        run: |
+          set +e
+          python scripts/poll_amendments.py
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -eq 1 ]; then exit 1; fi
+          exit 0
+
+      - name: Verify chain after appending
+        run: python scripts/poll_amendments.py --verify
+
+      - name: Commit
+        run: |
+          git config user.name  "amendment-log[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ docs/amendment-log/
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            exit 0
+          fi
+          if [ "${{ steps.poll.outputs.exit_code }}" = "2" ]; then
+            git commit -m "amendment detected $(date -u +%Y-%m-%d)"
+          else
+            git commit -m "sweep $(date -u +%Y-%m-%d) — no changes"
+          fi
+          git push
+
+      - name: Fail loudly if the sweep could not reach every instrument
+        # A silent outage is the failure mode that would make the completeness
+        # claim worthless. An unreachable Register must page, not pass.
+        if: steps.poll.outputs.exit_code == '1'
+        run: |
+          echo "::error::sweep incomplete — see log output"
+          exit 1

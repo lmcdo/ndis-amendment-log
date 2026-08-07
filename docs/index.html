@@ -1,0 +1,102 @@
+<title>NDIS amendment detection log</title>
+<style>
+:root{--bg:#f6f7fb;--fg:#171a2b;--mut:#767b94;--rule:#dcdfeb;--surf:#fff;
+--acc:#3b3f8f;--good:#0d6153;--warn:#8a5206;--bad:#9c2a3c;
+--m:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--s:Georgia,"Iowan Old Style",serif}
+@media(prefers-color-scheme:dark){:root{--bg:#101220;--fg:#e9eaf2;--mut:#7e839c;
+--rule:#2b2f43;--surf:#181b2b;--acc:#9298e8;--good:#6fc0ae;--warn:#e0ab63;--bad:#e8909e}}
+:root[data-theme=dark]{--bg:#101220;--fg:#e9eaf2;--mut:#7e839c;--rule:#2b2f43;
+--surf:#181b2b;--acc:#9298e8;--good:#6fc0ae;--warn:#e0ab63;--bad:#e8909e}
+:root[data-theme=light]{--bg:#f6f7fb;--fg:#171a2b;--mut:#767b94;--rule:#dcdfeb;
+--surf:#fff;--acc:#3b3f8f;--good:#0d6153;--warn:#8a5206;--bad:#9c2a3c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1080px;margin:0 auto;padding:32px 22px 70px}
+h1{font-family:var(--s);font-weight:400;font-size:clamp(25px,3.5vw,36px);
+margin:0 0 8px;letter-spacing:-.01em;text-wrap:balance}
+.lede{color:var(--mut);max-width:66ch;margin:0 0 26px}
+.stats{display:grid;gap:13px;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));
+margin-bottom:28px}
+.stat{background:var(--surf);border:1px solid var(--rule);border-radius:4px;padding:14px 15px}
+.stat .k{font-family:var(--m);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+color:var(--mut);font-weight:600;margin-bottom:6px}
+.stat .v{font-family:var(--m);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat .n{font-size:12px;color:var(--mut);margin-top:3px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--surf);
+border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+th{font-family:var(--m);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+color:var(--mut);text-align:left;padding:10px 13px;border-bottom:1px solid var(--rule);
+white-space:nowrap}
+td{padding:11px 13px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.m{font-family:var(--m);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sub{font-size:11px;color:var(--mut);margin-top:2px}
+a{color:var(--acc)}
+.good{color:var(--good);font-family:var(--m);font-weight:600}
+.warn{color:var(--warn);font-family:var(--m);font-weight:600}
+.bad{color:var(--bad);font-family:var(--m);font-weight:600}
+.muted{color:var(--mut);font-size:12px}
+h2{font-family:var(--m);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+color:var(--mut);margin:34px 0 12px}
+.note{background:var(--surf);border:1px solid var(--rule);border-left:3px solid var(--acc);
+border-radius:3px;padding:15px 17px;color:var(--mut);font-size:13.5px;max-width:78ch}
+.note b{color:var(--fg)}
+.alert{background:var(--surf);border:1px solid var(--rule);border-left:3px solid var(--warn);
+border-radius:3px;padding:15px 17px;color:var(--mut);font-size:13.5px;max-width:78ch}
+.alert b{color:var(--warn)}
+.alert ul{margin:9px 0 0;padding-left:19px}
+.alert li{margin:3px 0}
+code{font-family:var(--m);font-size:12px}
+</style>
+<div class="w">
+<h1>NDIS amendment detection log</h1>
+<p class="lede">Every amendment to the 10 tracked NDIS instruments, and how
+long we took to notice. Latency is measured against the Federal Register's own
+publication timestamp, not against our first sighting. Check any row against
+legislation.gov.au — that is the point of publishing it.</p>
+
+<div class="stats">
+  <div class="stat"><div class="k">Instruments tracked</div>
+    <div class="v">10</div><div class="n">Tier A corpus</div></div>
+  <div class="stat"><div class="k">Amendments detected</div>
+    <div class="v">0</div><div class="n">excludes baselines</div></div>
+  <div class="stat"><div class="k">Median latency</div>
+    <div class="v">—</div><div class="n">no detections yet</div></div>
+  <div class="stat"><div class="k">Worst latency</div>
+    <div class="v">—</div><div class="n">the number that matters</div></div>
+  <div class="stat"><div class="k">Sweeps run</div>
+    <div class="v">2</div>
+    <div class="n">0 with errors · since 2026-08-07</div></div>
+</div>
+
+<div class="scroll"><table>
+<thead><tr><th>Detected</th><th>Instrument</th><th>Compilation</th>
+<th>Effective</th><th>Registered</th><th>Latency</th></tr></thead>
+<tbody><tr><td class="m">2026-08-07</td><td>Approved Quality Auditors Rules<div class="sub m">F2025L01383</div></td><td class="m"><a href="https://www.legislation.gov.au/F2025L01383">F2025L01383</a><div class="sub">comp. 0</div></td><td class="m">2025-11-14</td><td class="m">2025-11-14</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Getting the NDIS Back on Track Transitional Rules<div class="sub m">F2024L01257</div></td><td class="m"><a href="https://www.legislation.gov.au/F2024L01257">F2024L01257</a><div class="sub">comp. 0</div></td><td class="m">2024-10-01</td><td class="m">2024-10-01</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Quality Indicators Guidelines<div class="sub m">F2018N00041</div></td><td class="m"><a href="https://www.legislation.gov.au/F2026C00528">F2026C00528</a><div class="sub">comp. 3</div></td><td class="m">2026-07-01</td><td class="m">2026-07-02</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Practice Standards — Worker Screening Rules<div class="sub m">F2018L00887</div></td><td class="m"><a href="https://www.legislation.gov.au/F2021C00788">F2021C00788</a><div class="sub">comp. 4</div></td><td class="m">2021-07-31</td><td class="m">2021-08-12</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Complaints Management &amp; Resolution Rules<div class="sub m">F2018L00634</div></td><td class="m"><a href="https://www.legislation.gov.au/F2026C00165">F2026C00165</a><div class="sub">comp. 1</div></td><td class="m">2026-01-28</td><td class="m">2026-02-27</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Incident Management &amp; Reportable Incidents Rules<div class="sub m">F2018L00633</div></td><td class="m"><a href="https://www.legislation.gov.au/F2018L00633">F2018L00633</a><div class="sub">comp. 0</div></td><td class="m">2018-05-18</td><td class="m">2018-05-18</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Restrictive Practices &amp; Behaviour Support Rules<div class="sub m">F2018L00632</div></td><td class="m"><a href="https://www.legislation.gov.au/F2020C01087">F2020C01087</a><div class="sub">comp. 1</div></td><td class="m">2020-12-01</td><td class="m">2020-12-14</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Provider Registration &amp; Practice Standards Rules<div class="sub m">F2018L00631</div></td><td class="m"><a href="https://www.legislation.gov.au/F2026C00527">F2026C00527</a><div class="sub">comp. 6</div></td><td class="m">2026-07-01</td><td class="m">2026-07-02</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>Code of Conduct Rules<div class="sub m">F2018L00629</div></td><td class="m"><a href="https://www.legislation.gov.au/F2024C00048">F2024C00048</a><div class="sub">comp. 1</div></td><td class="m">2023-12-19</td><td class="m">2024-01-12</td><td><span class="muted">baseline — no claim</span></td></tr><tr><td class="m">2026-08-07</td><td>NDIS Act 2013<div class="sub m">C2013A00020</div></td><td class="m"><a href="https://www.legislation.gov.au/C2026C00181">C2026C00181</a><div class="sub">comp. 25</div></td><td class="m">2026-05-06</td><td class="m">2026-05-06</td><td><span class="muted">baseline — no claim</span></td></tr></tbody>
+</table></div>
+
+<h2>Commenced but not yet consolidated</h2><div class="note">No tracked instrument currently has commenced amendments missing from its compilation. This is checked on every sweep — when it is not empty, reading the compilation alone would give the wrong answer.</div>
+
+<h2>How to check this</h2>
+<div class="note">
+<b>Every row is falsifiable.</b> Click a compilation ID to open it on the Federal
+Register and compare the compilation number and effective date.
+<br><br>
+<b>Baseline rows make no latency claim.</b> The first time an instrument is seen we
+were not watching when it was published, so no detection is claimed. Only rows after
+that measure anything.
+<br><br>
+<b>Sweeps are recorded even when nothing changed</b>, in <code>data/sweeps.jsonl</code>,
+including failures. A log that records only hits cannot tell you the difference between
+"nothing changed" and "we stopped looking", which would make any completeness claim
+unfalsifiable.
+<br><br>
+<b>The log is hash-chained and append-only.</b> Each entry commits to the previous one,
+so silently backfilling a missed amendment breaks the chain. Run
+<code>python scripts/poll_amendments.py --verify</code> to check it, and read the git
+history — commit timestamps come from the CI runner, not from us.
+</div>
+</div>
