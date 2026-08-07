@@ -68,7 +68,12 @@ jobs:
           set +e
           python scripts/observe_sources.py
           code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "observe_exit=$code" >> "$GITHUB_OUTPUT"
+          # 3 = partial outage. Known and expected: the Commission host refuses
+          # datacenter IPs, so its sitemap is unreachable from Actions. The
+          # outage is recorded in the data and shows in --report as "lost".
+          # Only a TOTAL failure (1) is treated as broken here, because this
+          # tier is quarantined and must never take down the amendment log.
           if [ "$code" -eq 1 ]; then exit 1; fi
           exit 0
 

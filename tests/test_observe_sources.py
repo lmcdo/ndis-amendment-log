@@ -190,3 +190,68 @@ class TestReport:
     def test_report_on_empty_history(self, monkeypatch, tmp_path):
         monkeypatch.setattr(obs, "OBS_PATH", tmp_path / "nope.jsonl")
         assert "No observations yet" in obs.report()
+
+
+class TestFailureSemantics:
+    """A lost signal is an absence, not a change; partial != total outage."""
+
+    def test_failed_sitemap_fetch_is_not_counted_as_a_change(
+        self, monkeypatch, tmp_path
+    ):
+        """Regression: a WAF block was inflating the observed change count.
+
+        GitHub Actions IPs are refused by the Commission host. The fingerprint
+        went None while a previous value existed, which read as "changed" and
+        would have polluted the noise rate this tier exists to measure.
+        """
+        obs_path = tmp_path / "observations.jsonl"
+        monkeypatch.setattr(obs, "OBS_PATH", obs_path)
+        monkeypatch.setattr(obs, "REQUEST_SPACING_SECONDS", 0)
+        monkeypatch.setattr(obs, "COMMISSION_WATCH", ["/a"])
+        monkeypatch.setattr(obs, "NDIA_WATCH", [])
+
+        monkeypatch.setattr(obs, "_head", lambda url: {"etag": '"sm1"'})
+        monkeypatch.setattr(
+            obs, "_get_text", lambda url: (
+                "<urlset><url><loc>https://c/a</loc>"
+                "<lastmod>2026-01-01</lastmod></url></urlset>"
+            ),
+        )
+        first, _ = obs.observe()
+        obs.append_observation(first)
+
+        def blocked(url):
+            raise OSError("blocked by WAF")
+
+        monkeypatch.setattr(obs, "_head", blocked)
+        record, errors = obs.observe()
+
+        assert errors, "the outage must be recorded"
+        assert record["changed"] == 0, "an unreachable source is not a change"
+
+    def test_total_failure_is_distinguished_from_partial(
+        self, monkeypatch, tmp_path
+    ):
+        monkeypatch.setattr(obs, "OBS_PATH", tmp_path / "o.jsonl")
+        monkeypatch.setattr(obs, "REQUEST_SPACING_SECONDS", 0)
+        monkeypatch.setattr(obs, "COMMISSION_WATCH", ["/a"])
+        monkeypatch.setattr(obs, "NDIA_WATCH", ["https://n/x"])
+
+        def blocked(url):
+            raise OSError("down")
+
+        monkeypatch.setattr(obs, "_head", blocked)
+        monkeypatch.setattr(obs, "_get_text", blocked)
+        record, _ = obs.observe()
+        assert record["total_failure"] is True
+
+        # Partial: NDIA answers, Commission does not.
+        monkeypatch.setattr(
+            obs, "_head",
+            lambda url: (
+                {"last-modified": "Fri, 07 Aug 2026 00:00:00 GMT"}
+                if "n/x" in url else (_ for _ in ()).throw(OSError("down"))
+            ),
+        )
+        record2, _ = obs.observe()
+        assert record2["total_failure"] is False

@@ -37,8 +37,9 @@ Usage:
 
 Exit codes:
     0 = observed cleanly, nothing changed
-    1 = error, or a watched signal disappeared
+    1 = TOTAL failure — nothing observable
     2 = changes observed
+    3 = partial outage, recorded (see --report 'lost' column)
 """
 
 from __future__ import annotations
@@ -230,8 +231,12 @@ def observe() -> tuple[dict[str, Any], list[str]]:
             "url": COMMISSION_SITEMAP,
             "source": "sitemap_fingerprint",
             "signal": fingerprint,
+            # A failed fetch is an absence, never a change. Counting it as one
+            # would inflate the very noise rate this tier exists to measure.
             "changed": bool(
-                previous_fingerprint and fingerprint != previous_fingerprint
+                fingerprint
+                and previous_fingerprint
+                and fingerprint != previous_fingerprint
             ),
             "first_seen": previous_fingerprint is None,
         }
@@ -321,6 +326,7 @@ def observe() -> tuple[dict[str, Any], list[str]]:
             f"no error recorded — the run is under-reporting"
         )
         record["errors"] = errors
+    record["total_failure"] = observed == 0
     return record, errors
 
 
@@ -394,7 +400,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"errors ({len(errors)}):")
         for error in errors:
             print(f"  - {error}")
-        return 1
+        # Exit 1 only when NOTHING could be observed. A partial outage is
+        # recorded in the data and surfaced by --report as a "lost" count;
+        # this tier is quarantined, so a source being unreachable is itself a
+        # finding about that source, not a reason to fail the pipeline that
+        # maintains the load-bearing amendment log.
+        return 1 if record["total_failure"] else 3
     return 2 if record["changed"] else 0
 
 
