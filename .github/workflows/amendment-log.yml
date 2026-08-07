@@ -61,7 +61,7 @@ jobs:
         run: |
           git config user.name  "amendment-log[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ docs/amendment-log/
+          git add data/ docs/
           if git diff --cached --quiet; then
             echo "nothing to commit"
             exit 0
